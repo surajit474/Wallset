@@ -54,14 +54,28 @@ fun listImagesInFolder(context: Context, treeUri: Uri): List<DocumentFile> {
 }
 
 
-fun setWallpaper(context: Context, uri: Uri) {
+fun setWallpaper(context: Context, uri: Uri, isHome: Boolean , isLock: Boolean ) {
         try {
             val source = ImageDecoder.createSource(context.contentResolver, uri)
             val bitmap = ImageDecoder.decodeBitmap(source)
 
             val wallpaperManager = WallpaperManager.getInstance(context)
-            wallpaperManager.setBitmap(bitmap)  // ✅ Sets home screen wallpaper
-            // wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK) // For lock screen
+            if (isHome) {
+                wallpaperManager.setBitmap(
+                    bitmap,
+                    null,
+                    true,
+                    WallpaperManager.FLAG_SYSTEM
+                )  // ✅ Sets home screen wallpaper
+            }
+            if (isLock) {
+                wallpaperManager.setBitmap(
+                    bitmap,
+                    null,
+                    true,
+                    WallpaperManager.FLAG_LOCK
+                ) // For lock screen
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
