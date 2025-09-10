@@ -51,4 +51,4 @@ Whether you want your favorite pictures on your **Home screen**, **Lock screen**
 Clone the repository and open in **Android Studio**:
 
 ```bash
-git clone https://github.com/yourusername/wallset.git
+git clone https://github.com/surajit474/Wallset.git
