@@ -1,41 +1,57 @@
 package com.example.wallset.ui.home
 
 
-import androidx.compose.foundation.background
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.wallset.util.FolderPicker
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen( homeViewModel: HomeViewModel = viewModel()) {
+    Log.d("HomeScreen", "Entering Homescreen")
+
+    val context = LocalContext.current
+    homeViewModel.getSetting(context)
+
+
+
     Scaffold() { innerPadding ->
         HomeBody(innerPadding = innerPadding)
     }
@@ -51,42 +67,39 @@ fun HomeBody(
 
 ) {
 
-
-
     val context = LocalContext.current
 
-    homeViewModel.getSetting(context)
 
-
-    var folderPath by remember { mutableStateOf("") }
-    var min by remember { mutableStateOf(0) }
-    var hour by remember { mutableStateOf(0) }
-    var isHome by remember { mutableStateOf(true) }
-    var isLock by remember { mutableStateOf(true) }
-
-    var wallpapers by remember { mutableStateOf<List<DocumentFile>>(emptyList()) }
-    var wallpapersIndex by remember { mutableStateOf(0) }
-    var wallpaperDelay by remember { mutableStateOf("") }
-
-    var isFolder by remember { mutableStateOf(false) }
 
     val settings by homeViewModel.settings.collectAsState()
 
-//    folderPath = settings.folderLocation
-//    isHome = settings.isHome
-//    isLock = settings.isLock
-//    hour = settings.interval.toInt()
-//    min = settings.interval.toString().substringAfter(".").toInt()
+    var min by remember { mutableStateOf(0) }
+    var hour by remember { mutableStateOf( "") }
+    var isHome by remember { mutableStateOf(true) }
+    var isLock by remember { mutableStateOf(true) }
+    var isFolder by remember { mutableStateOf(false) }
+    var isSave by remember { mutableStateOf(false) }
+    var folderPath by remember { mutableStateOf("") }
 
+
+    Log.d("HomeScreen", "settings : $settings")
+
+    if (settings != null && folderPath.isEmpty() && hour.isEmpty()){
+        hour = settings!!.interval.toString()
+        isHome = settings!!.isHome
+        isLock = settings!!.isLock
+        folderPath = settings!!.folderLocation
+
+    }
 
     Column(
         modifier = modifier
-        .fillMaxSize()
+            .fillMaxSize()
             .padding(innerPadding)
             .padding(top = 30.dp, bottom = 38.dp, start = 16.dp, end = 16.dp)
         ,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+//        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
        Button(
@@ -108,96 +121,142 @@ fun HomeBody(
         }
 
 
-        val f: List<String> = folderPath.split("%")
-        if (f.isNotEmpty()){
+            val decoded = Uri.decode(folderPath)
+            val  path = decoded.substringAfter("primary:")
             Text(
-                "${f.last()}"
+                "Wallpapers Folder: $path",
+                color = MaterialTheme.colorScheme.secondary,
+
             )
+
+        Spacer(Modifier.padding(vertical = 16.dp))
+
+        Text(
+            "Interval",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(onClick = { hour = (hour.toInt() - 1).toString() }) {
+//                Icon(Icons.Default.Remove, contentDescription = "Decrease")
+            }
+
+            OutlinedTextField(
+                value = "$hour hr",
+                onValueChange = {hour = it},
+                readOnly = true,
+                modifier = Modifier.width(120.dp),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+            )
+
+            IconButton(onClick = { hour = (hour.toInt() + 1).toString()  }) {
+                Icon(Icons.Default.Add, contentDescription = "Increase")
+            }
+        }
+
+        Spacer(Modifier.padding(vertical = 16.dp))
+
+        Text(
+            "Screen",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {  }
+//                .padding(4.dp)
+        ) {
+            RadioButton(
+                selected = isHome,
+                onClick = {isHome = !isHome }
+            )
+            Text("HomeScreen")
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {  }
+//                .padding(4.dp)
+        ) {
+            RadioButton(
+                selected = isLock,
+                onClick = { isLock = !isLock }
+            )
+            Text(" LockScreen")
         }
 
 
-        RoundNumberSelector(
-            value = min,
-            onValueChange = {
-                min = it
-            },
-            range = IntRange(15,60)
+        Spacer(Modifier.padding(vertical = 16.dp))
+
+        Text(
+            "Status",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
-        Text("Minutes")
 
-        RoundNumberSelector(
-            value = hour,
-            onValueChange = {
-                hour = it
-            },
-            range = IntRange(0,25)
-        )
-        Text("Hour")
+        WallpaperWorkerStatus(context)
 
+        Spacer(Modifier.weight(1F))
 
-        TextButton(
+        Button(
             onClick = {
                 homeViewModel.saveSetting(
                     context = context,
                     isHome = isHome,
                     isLock = isLock,
-                    interval = "$hour.$min".toFloat(),
+                    interval = hour.toLong(),
                     folderLocation = folderPath
                 )
-            }
+
+                Log.d("HomeScreen", "settings : $settings")
+                isSave = true
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save")
+            Text("Save", style = MaterialTheme.typography.titleMedium)
         }
-
-
-        Spacer(Modifier.weight(1F))
 
 
         Button(
             onClick = {
                 homeViewModel.startWallpaperWorkManager(context)
-        }
+        },
+            enabled = isSave,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Start")
         }
     }
 }
 
-
 @Composable
-fun RoundNumberSelector(
-    value: Int,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    range: IntRange = 0..100
-) {
-    Row(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surface, CircleShape)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        IconButton(onClick = { if (value > range.first) onValueChange(value - 1) }) {
-//            Icon(painterResource( R.drawable.btn_minus), contentDescription = "Decrease")
-        }
+fun WallpaperWorkerStatus(context: Context) {
+    val workManager = WorkManager.getInstance(context)
+    val workInfos by workManager
+        .getWorkInfosForUniqueWorkLiveData("WallpaperChanger")
+        .observeAsState()
 
-        Text(
-            text = value.toString(),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        IconButton(onClick = { if (value < range.last) onValueChange(value + 1) }) {
-            Icon(Icons.Default.Add, contentDescription = "Increase")
+    workInfos?.firstOrNull()?.let { info ->
+        when (info.state) {
+            WorkInfo.State.RUNNING -> Text("Work is running…")
+            WorkInfo.State.ENQUEUED -> Text("Work scheduled")
+            WorkInfo.State.SUCCEEDED -> Text("Work finished")
+            else -> Text("Idle")
         }
     }
 }
 
-
-
 @Preview
 @Composable
-fun HomePreview(){
-    HomeBody(innerPadding = PaddingValues(0.dp))
+fun HomePreview() {
+HomeBody(innerPadding = PaddingValues(0.dp))
 }
