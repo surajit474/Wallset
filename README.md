@@ -24,9 +24,12 @@ Whether you want your favorite pictures on your **Home screen**, **Lock screen**
 
 ## 📸 Screenshots
 
- ![WhatsApp Image 2025-09-16 at 1 06 03 PM](https://github.com/user-attachments/assets/a4eb81a5-7275-402c-b31d-eeb6149fa03b)
+![photo](https://github.com/user-attachments/assets/fb2729fb-0907-4c9d-8ddb-fb723f62f664)
 
-https://github.com/user-attachments/assets/7e9353ce-5a3c-4e08-bcf5-29414e01be30
+
+https://github.com/user-attachments/assets/e04b5005-7f0f-4825-ab3d-d6caff256500
+
+
 
 
 
