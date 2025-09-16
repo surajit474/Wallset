@@ -57,7 +57,7 @@ suspend fun startWallpaperWorker(context: Context) {
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
         "WallpaperChanger",
-        ExistingPeriodicWorkPolicy.UPDATE,
+        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
         wallpaperWork
     )
 }
