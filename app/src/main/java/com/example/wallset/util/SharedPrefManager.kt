@@ -44,8 +44,8 @@ object SharedPrefManager {
         val settingsFlow: Flow<Settings> =
             context.dataStore.data.map { prefs ->
                 Settings(
-                    isHome = prefs[IS_HOME] ?: false,
-                    isLock = prefs[IS_LOCK] ?: false,
+                    isHome = prefs[IS_HOME] ?: true,
+                    isLock = prefs[IS_LOCK] ?: true,
                     interval = prefs[INTERVAL] ?: 1L,
                     folderLocation = prefs[FOLDER_LOCATION] ?: ""
                 )
