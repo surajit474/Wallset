@@ -24,7 +24,11 @@ Whether you want your favorite pictures on your **Home screen**, **Lock screen**
 
 ## 📸 Screenshots
 
-*(Add screenshots of your app UI here – e.g., folder picker, settings screen, wallpaper preview)*  
+ ![WhatsApp Image 2025-09-16 at 1 06 03 PM](https://github.com/user-attachments/assets/a4eb81a5-7275-402c-b31d-eeb6149fa03b)
+
+https://github.com/user-attachments/assets/7e9353ce-5a3c-4e08-bcf5-29414e01be30
+
+
 
 ---
 
