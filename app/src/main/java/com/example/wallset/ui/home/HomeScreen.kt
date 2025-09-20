@@ -35,12 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.example.wallset.R
 import com.example.wallset.util.FolderPicker
 
 @Composable
@@ -77,18 +79,21 @@ fun HomeBody(
     var hour by remember { mutableStateOf( "") }
     var isHome by remember { mutableStateOf(true) }
     var isLock by remember { mutableStateOf(true) }
-    var isFolder by remember { mutableStateOf(false) }
+    var isDarkFolder by remember { mutableStateOf(false) }
+    var isLightFolder by remember { mutableStateOf(false) }
     var isSave by remember { mutableStateOf(false) }
-    var folderPath by remember { mutableStateOf("") }
+    var darkFolderPath by remember { mutableStateOf("") }
+    var lightFolderPath by remember { mutableStateOf("") }
 
 
     Log.d("HomeScreen", "settings : $settings")
 
-    if (settings != null && folderPath.isEmpty() && hour.isEmpty()){
+    if (settings != null && darkFolderPath.isEmpty() && hour.isEmpty()){
         hour = settings!!.interval.toString()
         isHome = settings!!.isHome
         isLock = settings!!.isLock
-        folderPath = settings!!.folderLocation
+        darkFolderPath = settings!!.darkFolderLocation
+        lightFolderPath = settings!!.lightFolderLocation
 
     }
 
@@ -104,30 +109,61 @@ fun HomeBody(
 
        Button(
            onClick = {
-               isFolder = true
+               isDarkFolder = true
                },
        ) {
-           Text(text = "Select Wallpapers Folder")
+           Text(text = "Select Dark Wallpapers Folder")
        }
-        if (isFolder) {
+        if (isDarkFolder) {
             FolderPicker(
                 onFolderPicked = { uri ->
-               folderPath = uri.toString()
+               darkFolderPath = uri.toString()
                 },
                 onFolder = { value ->
-                    isFolder = value
+                    isDarkFolder = value
                 }
             )
         }
 
 
-            val decoded = Uri.decode(folderPath)
-            val  path = decoded.substringAfter("primary:")
+            val decodedDark = Uri.decode(darkFolderPath)
+            val  darkPath = decodedDark.substringAfter("primary:")
             Text(
-                "Wallpapers Folder: $path",
+                "Dark Wallpapers : $darkPath",
                 color = MaterialTheme.colorScheme.secondary,
 
             )
+
+
+
+        Button(
+            onClick = {
+                isLightFolder = true
+            },
+        ) {
+            Text(text = "Select Light Wallpapers Folder")
+        }
+        if (isLightFolder) {
+            FolderPicker(
+                onFolderPicked = { uri ->
+                    lightFolderPath = uri.toString()
+                },
+                onFolder = { value ->
+                    isLightFolder = value
+                }
+            )
+        }
+
+
+        val decodedLight = Uri.decode(lightFolderPath)
+        val  lightPath = decodedLight.substringAfter("primary:")
+        Text(
+            "Light Wallpapers: $lightPath",
+            color = MaterialTheme.colorScheme.secondary,
+
+            )
+
+
 
         Spacer(Modifier.padding(vertical = 16.dp))
 
@@ -140,14 +176,19 @@ fun HomeBody(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            IconButton(onClick = { hour = (hour.toInt() - 1).toString() }) {
-//                Icon(Icons.Default.Remove, contentDescription = "Decrease")
+            IconButton(
+                onClick = { hour = (hour.toInt() - 1).toString() },
+                enabled = if (hour.isNotEmpty()) hour.toInt()>0 else  true
+            ) {
+                Icon(painter = painterResource(R.drawable.remove_24px), contentDescription = "Decrease")
             }
 
             OutlinedTextField(
                 value = "$hour hr",
-                onValueChange = {hour = it},
-                readOnly = true,
+                onValueChange = {
+                        hour = it
+                                },
+//                readOnly = true,
                 modifier = Modifier.width(120.dp),
                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
             )
@@ -214,7 +255,8 @@ fun HomeBody(
                     isHome = isHome,
                     isLock = isLock,
                     interval = hour.toLong(),
-                    folderLocation = folderPath
+                    darkFolderPath = darkFolderPath,
+                    lightFolderPath = lightFolderPath
                 )
 
                 Log.d("HomeScreen", "settings : $settings")

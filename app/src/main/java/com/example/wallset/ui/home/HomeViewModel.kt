@@ -17,7 +17,7 @@ class HomeViewModel: ViewModel() {
 
     val settings: StateFlow<Settings?> = _settings
 
-    fun saveSetting(context: Context, isHome: Boolean, isLock: Boolean, interval: Long, folderLocation: String){
+    fun saveSetting(context: Context, isHome: Boolean, isLock: Boolean, interval: Long, darkFolderPath: String, lightFolderPath : String){
         viewModelScope.launch {
             Log.d("HomeViewModel", "save setting ")
             SharedPrefManager.saveSettings(
@@ -25,7 +25,8 @@ class HomeViewModel: ViewModel() {
                 isHome = isHome,
                 isLock = isLock,
                 interval = interval,
-                folderLocation = folderLocation
+                darkFolderLocation = darkFolderPath,
+                lightFolderLocation = lightFolderPath
             )
         }
     }

@@ -15,26 +15,29 @@ data class Settings(
     val isHome: Boolean,
     val isLock: Boolean,
     val interval: Long,
-    val folderLocation: String
-    
+    val darkFolderLocation: String,
+    val lightFolderLocation: String
+
 )
 object SharedPrefManager {
 
     val IS_HOME = booleanPreferencesKey("is_home")
     val IS_LOCK = booleanPreferencesKey("is_lock")
     val INTERVAL = longPreferencesKey("interval")
-    val FOLDER_LOCATION = stringPreferencesKey( "folderLocation")
+    val DARK_FOLDER_LOCATION = stringPreferencesKey( "darkFolderLocation")
+    val LIGHT_FOLDER_LOCATION = stringPreferencesKey( "lightFolderLocation")
 
     val Context.dataStore by preferencesDataStore(name = "wallpaper_settings")
 
 
-    suspend fun saveSettings(context: Context, isHome: Boolean, isLock: Boolean, interval: Long, folderLocation: String) {
+    suspend fun saveSettings(context: Context, isHome: Boolean, isLock: Boolean, interval: Long, darkFolderLocation: String, lightFolderLocation: String) {
         Log.d("SharedPrefManager","saveSettings"  )
         context.dataStore.edit { prefs ->
             prefs[IS_HOME] = isHome
             prefs[IS_LOCK] = isLock
             prefs[INTERVAL] = interval
-            prefs[FOLDER_LOCATION] = folderLocation
+            prefs[DARK_FOLDER_LOCATION] = darkFolderLocation
+            prefs[LIGHT_FOLDER_LOCATION] = lightFolderLocation
         }
     }
 
@@ -47,7 +50,8 @@ object SharedPrefManager {
                     isHome = prefs[IS_HOME] ?: true,
                     isLock = prefs[IS_LOCK] ?: true,
                     interval = prefs[INTERVAL] ?: 1L,
-                    folderLocation = prefs[FOLDER_LOCATION] ?: ""
+                    darkFolderLocation = prefs[DARK_FOLDER_LOCATION] ?: "",
+                    lightFolderLocation = prefs[LIGHT_FOLDER_LOCATION] ?: ""
                 )
             }
 
