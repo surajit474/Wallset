@@ -7,7 +7,7 @@ Whether you want your favorite pictures on your **Home screen**, **Lock screen**
 
 ## ✨ Features
 
-- 📂 **Custom Folder Selection** – Choose any folder (e.g., *Downloads/Telegram*) as your wallpaper source.  
+- 📂 **Custom Folder Selection** – Choose any folder (e.g., *Downloads/Telegram*) as your wallpaper source(dark or light if only have one folder them select them both for this one folder).  
 - ⏱️ **Flexible Interval** – Set how often wallpapers should change (from **1 to 24 hours**).  
 - 🏠🔒 **Home / Lock Screen Options** – Apply wallpapers to the **Home screen**, **Lock screen**, or **both**.  
 - ⚙️ **Background Scheduling** – Powered by WorkManager to run even when the app is closed.  
